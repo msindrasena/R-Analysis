@@ -1,0 +1,46 @@
+# Import Libraries
+library(jsonlite)
+library(tidyverse)
+
+# Read file
+mechacar_mpg <- read.csv(file = 'MechaCar_mpg.csv', check.names = F,stringsAsFactors = F)
+head(mechacar_mpg)
+
+#Linear Model
+lm(mpg ~ vehicle_length + vehicle_weight + spoiler_angle + ground_clearance + AWD,data = mechacar_mpg)
+
+#Summary Stats to find p value
+summary(lm(mpg ~ vehicle_length + vehicle_weight + spoiler_angle + ground_clearance + AWD,data = mechacar_mpg))
+
+#Ground Clearance vs MPG
+gcmodel <- lm(mpg ~ ground_clearance, mechacar_mpg)
+gcyvalue <- gcmodel$coefficients['ground_clearance']*mechacar_mpg$ground_clearance + gcmodel$coefficients['Intercept)']
+
+plt <- ggplot(mechacar_mpg,aes(x=ground_clearance , y=mpg))
+
+plt + geom_point() + geom_line(aes(y=gcyvalue),color = 'blue')
+
+# Weight vs MPG
+weightmodel <- lm(mpg ~ vehicle_weight, mechacar_mpg)
+weightyvalue <- weightmodel$coefficients['vehicle_weight']*mechacar_mpg$vehicle_weight + weightmodel$coefficients['Intercept']
+
+plt <- ggplot(mechacar_mpg,aes(x=vehicle_weight , y=mpg))
+
+plt + geom_point() + geom_line(aes(y=weightyvalue), color = 'red')
+
+
+# Summary Stats: Suspension Coil 
+
+#Read csv file
+suspension_coil <- read.csv('Suspension_Coil.csv')
+
+#Summary Statistics
+suspension_summary <- suspension_coil %>% summarize(Mean = mean(PSI), Median = median(PSI), Variance = var(PSI), SD = sd(PSI))
+suspension_summary
+
+# Summary Statistics by Lot Production
+suspension_summary_by_lot <- suspension_coil %>% group_by(Manufacturing_Lot) %>% summarize(Mean = mean(PSI), Median = median(PSI), Variance = var(PSI), SD = sd(PSI))
+suspension_summary_by_lot
+
+# T-test
+t.test(suspension_coil$PSI, mu=1500)
